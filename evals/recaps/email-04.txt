@@ -1,0 +1,27 @@
+[17:38] Ops Desk: any update on the recap?
+[17:40] Fairlead Brokers: FIXTURE RECAP - MT AZURE MERLIN / SUNMERE - CP DD 04 NOV 2026
+
+[17:40] Fairlead Brokers: HEREWITH RECAP OF THE FIXTURE CONCLUDED TODAY:
+
+[17:40] Fairlead Brokers: VSL         : MT AZURE MERLIN (IMO 9870288)
+[17:40] Fairlead Brokers: OWNERS      : BRAEMOOR CRUDE CARRIERS
+[17:41] Fairlead Brokers: CHRTS       : SUNMERE ENERGY
+[17:41] Fairlead Brokers: CARGO       : 280,000 MT CRUDE OIL 10% MOLCHOPT
+[17:41] Fairlead Brokers: LOAD        : 1 SP SIDI KERIR
+[17:41] Fairlead Brokers: DISCH       : 1 SP AUGUSTA
+[17:41] Fairlead Brokers: LAYCAN      : 06/08 DECEMBER
+[17:41] Fairlead Brokers: FRT         : WS 57.5
+[17:42] Fairlead Brokers: DEM         : USD 85,000 PER DAY PRO RATA
+[17:42] Fairlead Brokers: LAYTIME     : 96 HRS SHINC
+[17:42] Fairlead Brokers: COMMS       : ADDRESS 3.75 PCT, BROKERAGE 1.25 PCT
+[17:42] Fairlead Brokers: CP          : ASBATANKVOY
+[17:42] Fairlead Brokers: SUBJECTS    : CLEAN FIXED
+
+[17:43] Fairlead Brokers: OTHER TERMS:
+[17:43] Fairlead Brokers: - ETS COSTS FOR CHRTS ACCT
+[17:43] Fairlead Brokers: - ICE CLAUSE AS PER CP
+
+[17:43] Fairlead Brokers: OTHERWISE AS PER OWNERS LAST CP WITH ACME, LOGICALLY AMENDED.
+
+[17:44] Fairlead Brokers: THANKS FOR THE SUPPORT
+[17:47] Ops Desk: tks, noted

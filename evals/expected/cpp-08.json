@@ -1,0 +1,57 @@
+{
+  "recap_id": "cpp-08",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "FJELLSTAD",
+    "imo": "9464039",
+    "charterer": "PELICAN BAY REFINERY",
+    "owner": "BRAEMOOR CRUDE CARRIERS",
+    "cargo": {
+      "grade": "CPP (UNL GASOLINE)",
+      "quantity_mt": 37000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC-MED"
+    ],
+    "laycan": {
+      "start": "2026-11-17",
+      "end": "2026-11-19"
+    },
+    "freight": {
+      "basis": "PER_MT",
+      "value": 12.5,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 28500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-31",
+    "special_clauses": [
+      "WAR RISK FOR CHRTS ACCT"
+    ]
+  },
+  "expect_flagged": []
+}

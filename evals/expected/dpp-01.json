@@ -1,0 +1,59 @@
+{
+  "recap_id": "dpp-01",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "OCEAN LYRIC",
+    "imo": "9458676",
+    "charterer": "SUNMERE ENERGY",
+    "owner": "KESTREL MARITIME LTD",
+    "cargo": {
+      "grade": "CONDENSATE",
+      "quantity_mt": 140000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "JUBAIL",
+      "RAS TANURA"
+    ],
+    "discharge_ports": [
+      "ULSAN"
+    ],
+    "laycan": {
+      "start": "2026-10-22",
+      "end": "2026-10-24"
+    },
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 1875000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 45000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-02",
+    "special_clauses": [
+      "COW AS PER MARPOL",
+      "BIMCO SANCTIONS CLAUSE TO APPLY"
+    ]
+  },
+  "expect_flagged": []
+}

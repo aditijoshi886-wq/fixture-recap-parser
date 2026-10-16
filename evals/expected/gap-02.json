@@ -1,0 +1,54 @@
+{
+  "recap_id": "gap-02",
+  "slice": "missing_or_conflicting",
+  "fields": {
+    "vessel_name": "GANNET POINT",
+    "imo": "9991317",
+    "charterer": "VERIDIAN REFINING",
+    "owner": "KESTREL MARITIME LTD",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 260000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "CEYHAN"
+    ],
+    "discharge_ports": [
+      "MED"
+    ],
+    "laycan": {
+      "start": "2026-10-12",
+      "end": "2026-10-14"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 52,
+      "currency": null
+    },
+    "demurrage": null,
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-04",
+    "special_clauses": []
+  },
+  "expect_flagged": [
+    "demurrage"
+  ],
+  "note": "No demurrage stated; must be null and flagged."
+}

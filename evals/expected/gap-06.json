@@ -1,0 +1,55 @@
+{
+  "recap_id": "gap-06",
+  "slice": "missing_or_conflicting",
+  "fields": {
+    "vessel_name": "ADRIA SKY",
+    "imo": "9274355",
+    "charterer": "HARBORLINE FUELS",
+    "owner": "KESTREL MARITIME LTD",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 280000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "CEYHAN"
+    ],
+    "discharge_ports": [
+      "MED"
+    ],
+    "laycan": null,
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 1400000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 85000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 84.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-13",
+    "special_clauses": []
+  },
+  "expect_flagged": [
+    "laycan"
+  ],
+  "note": "Laycan stated, then 'amended' with a query mark; ambiguous, must be null and flagged."
+}

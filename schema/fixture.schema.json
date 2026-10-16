@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/aditijoshi886-wq/fixture-recap-parser/schema/fixture.schema.json",
+  "title": "Tanker fixture",
+  "description": "Generic export shape for one tanker fixture extracted from a broker recap. Every field is present; a term the recap does not state is null, never guessed. Version 1.0.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "vessel_name", "imo", "charterer", "owner", "cargo", "load_ports", "discharge_ports",
+    "laycan", "freight", "demurrage", "laytime", "commissions", "cp_form", "subjects",
+    "fixture_date", "special_clauses"
+  ],
+  "properties": {
+    "vessel_name": {
+      "description": "Vessel name without the MT/MV prefix. Critical.",
+      "type": ["string", "null"], "minLength": 1
+    },
+    "imo": {
+      "description": "Seven-digit IMO number. Must pass the IMO check-digit rule.",
+      "type": ["string", "null"], "pattern": "^[0-9]{7}$"
+    },
+    "charterer": {
+      "description": "Charterer as named in the recap. Critical.",
+      "type": ["string", "null"], "minLength": 1
+    },
+    "owner": {
+      "description": "Owner or disponent owner as named in the recap.",
+      "type": ["string", "null"], "minLength": 1
+    },
+    "cargo": {
+      "description": "Cargo grade, quantity and tolerance. Critical.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["grade", "quantity_mt", "tolerance_pct", "tolerance_option"],
+      "properties": {
+        "grade": { "type": "string", "minLength": 1 },
+        "quantity_mt": { "type": "number", "exclusiveMinimum": 0 },
+        "tolerance_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 20 },
+        "tolerance_option": {
+          "description": "Who declares the tolerance: owners (MOLOO) or charterers (MOLCHOPT).",
+          "enum": ["MOLOO", "MOLCHOPT", null]
+        }
+      }
+    },
+    "load_ports": {
+      "description": "Load ports or ranges, in recap order, using canonical names (see docs/ports.md). Critical.",
+      "type": ["array", "null"], "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "discharge_ports": {
+      "description": "Discharge ports or ranges, in recap order. Critical.",
+      "type": ["array", "null"], "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "laycan": {
+      "description": "Laydays and cancelling dates. The year is inferred from the fixture date when not stated. Critical.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "string", "format": "date" },
+        "end": { "type": "string", "format": "date" }
+      }
+    },
+    "freight": {
+      "description": "Freight basis and value. WS = Worldscale points; LUMPSUM and PER_MT carry a currency. Critical.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["basis", "value", "currency"],
+      "properties": {
+        "basis": { "enum": ["WS", "LUMPSUM", "PER_MT"] },
+        "value": { "type": "number", "exclusiveMinimum": 0 },
+        "currency": { "type": ["string", "null"], "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "demurrage": {
+      "description": "Demurrage rate per day. Critical.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["rate_per_day", "currency", "pro_rata"],
+      "properties": {
+        "rate_per_day": { "type": "number", "exclusiveMinimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "pro_rata": { "type": "boolean" }
+      }
+    },
+    "laytime": {
+      "description": "Total laytime in hours and the terms (e.g. SHINC).",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["hours", "terms"],
+      "properties": {
+        "hours": { "type": "number", "exclusiveMinimum": 0 },
+        "terms": { "type": ["string", "null"] }
+      }
+    },
+    "commissions": {
+      "description": "Address commission and brokerage, in percent.",
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "pct"],
+        "properties": {
+          "type": { "enum": ["ADDRESS", "BROKERAGE"] },
+          "pct": { "type": "number", "minimum": 0, "maximum": 10 }
+        }
+      }
+    },
+    "cp_form": {
+      "description": "Charter party form, e.g. ASBATANKVOY, BPVOY4, SHELLVOY 6.",
+      "type": ["string", "null"], "minLength": 1
+    },
+    "subjects": {
+      "description": "Whether the fixture is still on subjects or fixed clean. Critical.",
+      "enum": ["ON_SUBJECTS", "FIXED_CLEAN", null]
+    },
+    "fixture_date": {
+      "description": "Date the fixture was concluded.",
+      "type": ["string", "null"], "format": "date"
+    },
+    "special_clauses": {
+      "description": "Other agreed terms, kept verbatim, one per item.",
+      "type": ["array", "null"],
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

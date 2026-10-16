@@ -1,0 +1,58 @@
+{
+  "recap_id": "email-04",
+  "slice": "messy_email",
+  "fields": {
+    "vessel_name": "AZURE MERLIN",
+    "imo": "9870288",
+    "charterer": "SUNMERE ENERGY",
+    "owner": "BRAEMOOR CRUDE CARRIERS",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 280000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "SIDI KERIR"
+    ],
+    "discharge_ports": [
+      "AUGUSTA"
+    ],
+    "laycan": {
+      "start": "2026-12-06",
+      "end": "2026-12-08"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 57.5,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 85000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-04",
+    "special_clauses": [
+      "ETS COSTS FOR CHRTS ACCT",
+      "ICE CLAUSE AS PER CP"
+    ]
+  },
+  "expect_flagged": []
+}

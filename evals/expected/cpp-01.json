@@ -1,0 +1,55 @@
+{
+  "recap_id": "cpp-01",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "AEGEAN CREST",
+    "imo": "9596595",
+    "charterer": "PELICAN BAY REFINERY",
+    "owner": "BRAEMOOR CRUDE CARRIERS",
+    "cargo": {
+      "grade": "CPP (GASOIL 10PPM)",
+      "quantity_mt": 55000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "CARIBS"
+    ],
+    "laycan": {
+      "start": "2026-11-15",
+      "end": "2026-11-18"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 140,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 30000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 84.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-18",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

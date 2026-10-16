@@ -1,0 +1,55 @@
+{
+  "recap_id": "short-02",
+  "slice": "shorthand",
+  "fields": {
+    "vessel_name": "ARCTIC LARCH",
+    "imo": null,
+    "charterer": "ACME ENERGY TRADING SA",
+    "owner": null,
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 130000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "RAS TANURA"
+    ],
+    "discharge_ports": [
+      "FAR EAST"
+    ],
+    "laycan": {
+      "start": "2026-10-25",
+      "end": "2026-10-27"
+    },
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 850000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 48000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-14",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

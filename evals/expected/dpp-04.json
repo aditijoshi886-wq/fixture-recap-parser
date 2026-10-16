@@ -1,0 +1,57 @@
+{
+  "recap_id": "dpp-04",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "ISLA BRAVA",
+    "imo": "9386902",
+    "charterer": "VERIDIAN REFINING",
+    "owner": "FJELLSTAD TANKERS AS",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 100000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC"
+    ],
+    "laycan": {
+      "start": "2026-12-11",
+      "end": "2026-12-13"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 150,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 35000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 1.25
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "ON_SUBJECTS",
+    "fixture_date": "2026-11-28",
+    "special_clauses": [
+      "BIMCO SANCTIONS CLAUSE TO APPLY"
+    ]
+  },
+  "expect_flagged": []
+}

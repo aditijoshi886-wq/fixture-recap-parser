@@ -1,0 +1,57 @@
+{
+  "recap_id": "dpp-05",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "NORTHERN QUILL",
+    "imo": "9052343",
+    "charterer": "TERRANOVA CRUDE MARKETING",
+    "owner": "BRAEMOOR CRUDE CARRIERS",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 260000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC"
+    ],
+    "laycan": {
+      "start": "2027-01-04",
+      "end": "2027-01-07"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 47.5,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 85000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-12-03",
+    "special_clauses": [
+      "BIMCO SANCTIONS CLAUSE TO APPLY"
+    ]
+  },
+  "expect_flagged": []
+}

@@ -1,0 +1,58 @@
+{
+  "recap_id": "email-01",
+  "slice": "messy_email",
+  "fields": {
+    "vessel_name": "OCEAN TEAL",
+    "imo": "9675391",
+    "charterer": "TERRANOVA CRUDE MARKETING",
+    "owner": "SOLWAY TANKER POOL",
+    "cargo": {
+      "grade": "CPP (JET A1)",
+      "quantity_mt": 55000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "ROTTERDAM"
+    ],
+    "discharge_ports": [
+      "NEW YORK"
+    ],
+    "laycan": {
+      "start": "2026-11-24",
+      "end": "2026-11-26"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 210,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 30000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-28",
+    "special_clauses": [
+      "BIMCO SANCTIONS CLAUSE TO APPLY",
+      "WAR RISK FOR CHRTS ACCT"
+    ]
+  },
+  "expect_flagged": []
+}

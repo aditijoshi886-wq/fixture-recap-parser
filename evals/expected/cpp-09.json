@@ -1,0 +1,55 @@
+{
+  "recap_id": "cpp-09",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "SEA WARBLER",
+    "imo": "9913315",
+    "charterer": "COASTLINE PETROLEUM",
+    "owner": "HALCYON NAVIGATION SA",
+    "cargo": {
+      "grade": "CPP (ULSD)",
+      "quantity_mt": 60000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "AG"
+    ],
+    "discharge_ports": [
+      "FAR EAST"
+    ],
+    "laycan": {
+      "start": "2026-12-30",
+      "end": "2027-01-02"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 235,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 32500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-12-09",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

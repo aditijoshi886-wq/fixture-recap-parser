@@ -1,0 +1,55 @@
+{
+  "recap_id": "short-06",
+  "slice": "shorthand",
+  "fields": {
+    "vessel_name": "VEGA STRAIT",
+    "imo": null,
+    "charterer": "HARBORLINE",
+    "owner": null,
+    "cargo": {
+      "grade": "FUEL OIL 380 CST",
+      "quantity_mt": 100000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "SANTOS"
+    ],
+    "discharge_ports": [
+      "CHIBA"
+    ],
+    "laycan": {
+      "start": "2026-11-27",
+      "end": "2026-11-30"
+    },
+    "freight": {
+      "basis": "PER_MT",
+      "value": 12.5,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 35000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 84.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-04",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

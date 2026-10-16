@@ -1,0 +1,55 @@
+{
+  "recap_id": "short-05",
+  "slice": "shorthand",
+  "fields": {
+    "vessel_name": "CASTLE ROCK",
+    "imo": null,
+    "charterer": "COASTLINE PETROLEUM",
+    "owner": null,
+    "cargo": {
+      "grade": "CPP (UNL GASOLINE)",
+      "quantity_mt": 38000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC-MED"
+    ],
+    "laycan": {
+      "start": "2026-11-07",
+      "end": "2026-11-09"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 140,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 22000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 1.25
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-05",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

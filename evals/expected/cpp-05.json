@@ -1,0 +1,56 @@
+{
+  "recap_id": "cpp-05",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "TIDEWAY PRIDE",
+    "imo": "9555668",
+    "charterer": "ACME ENERGY TRADING SA",
+    "owner": "HALCYON NAVIGATION SA",
+    "cargo": {
+      "grade": "CPP (UNL GASOLINE)",
+      "quantity_mt": 30000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "HOUSTON",
+      "CORPUS CHRISTI"
+    ],
+    "discharge_ports": [
+      "ECSA"
+    ],
+    "laycan": {
+      "start": "2026-11-27",
+      "end": "2026-11-28"
+    },
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 1400000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 28500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-19",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

@@ -1,0 +1,55 @@
+{
+  "recap_id": "dpp-10",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "TERN OSPREY",
+    "imo": "9945992",
+    "charterer": "ACME ENERGY TRADING SA",
+    "owner": "HALCYON NAVIGATION SA",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 260000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "SIDI KERIR"
+    ],
+    "discharge_ports": [
+      "AUGUSTA"
+    ],
+    "laycan": {
+      "start": "2026-11-22",
+      "end": "2026-11-24"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 57.5,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 68000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-17",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

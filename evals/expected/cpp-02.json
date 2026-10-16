@@ -1,0 +1,58 @@
+{
+  "recap_id": "cpp-02",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "KESTREL SPIRIT",
+    "imo": "9612686",
+    "charterer": "VERIDIAN REFINING",
+    "owner": "KESTREL MARITIME LTD",
+    "cargo": {
+      "grade": "CPP (GASOIL 10PPM)",
+      "quantity_mt": 60000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "AMSTERDAM",
+      "ANTWERP"
+    ],
+    "discharge_ports": [
+      "WAF"
+    ],
+    "laycan": {
+      "start": "2026-11-19",
+      "end": "2026-11-21"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 115,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 32500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 1.25
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-21",
+    "special_clauses": [
+      "TWO GRADES WVNS"
+    ]
+  },
+  "expect_flagged": []
+}

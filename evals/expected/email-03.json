@@ -1,0 +1,55 @@
+{
+  "recap_id": "email-03",
+  "slice": "messy_email",
+  "fields": {
+    "vessel_name": "CAPE COLVILLE",
+    "imo": "9104639",
+    "charterer": "ORIEL OIL TRADING",
+    "owner": "HALCYON NAVIGATION SA",
+    "cargo": {
+      "grade": "CPP (GASOIL 10PPM)",
+      "quantity_mt": 37000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "AG"
+    ],
+    "discharge_ports": [
+      "WAF"
+    ],
+    "laycan": {
+      "start": "2026-12-06",
+      "end": "2026-12-08"
+    },
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 1400000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 24500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-07",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

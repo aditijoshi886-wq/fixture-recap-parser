@@ -1,0 +1,58 @@
+{
+  "recap_id": "cpp-07",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "BRAEMOOR VOYAGER",
+    "imo": "9824423",
+    "charterer": "ORIEL OIL TRADING",
+    "owner": "TIDEWAY SHIPHOLDING",
+    "cargo": {
+      "grade": "CPP (UNL GASOLINE)",
+      "quantity_mt": 30000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC-MED"
+    ],
+    "laycan": {
+      "start": "2026-12-21",
+      "end": "2026-12-24"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 115,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 28500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-25",
+    "special_clauses": [
+      "CHRTS TO PROVIDE LOI FOR DISCH WITHOUT BL",
+      "TWO GRADES WVNS"
+    ]
+  },
+  "expect_flagged": []
+}

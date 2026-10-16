@@ -1,0 +1,57 @@
+{
+  "recap_id": "email-02",
+  "slice": "messy_email",
+  "fields": {
+    "vessel_name": "NORDLYS",
+    "imo": "9597757",
+    "charterer": "HARBORLINE FUELS",
+    "owner": "AEGEAN CREST SHIPPING",
+    "cargo": {
+      "grade": "CONDENSATE",
+      "quantity_mt": 135000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "CEYHAN"
+    ],
+    "discharge_ports": [
+      "MED"
+    ],
+    "laycan": {
+      "start": "2026-11-28",
+      "end": "2026-11-30"
+    },
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 1875000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 52500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-02",
+    "special_clauses": [
+      "WAR RISK FOR CHRTS ACCT"
+    ]
+  },
+  "expect_flagged": []
+}

@@ -1,0 +1,57 @@
+{
+  "recap_id": "cpp-03",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "SOLWAY TRADER",
+    "imo": "9383900",
+    "charterer": "ORIEL OIL TRADING",
+    "owner": "KESTREL MARITIME LTD",
+    "cargo": {
+      "grade": "CPP (JET A1)",
+      "quantity_mt": 90000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "SINGAPORE"
+    ],
+    "discharge_ports": [
+      "FAR EAST"
+    ],
+    "laycan": {
+      "start": "2026-12-29",
+      "end": "2027-01-01"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 115,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 40000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 1.25
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-12-01",
+    "special_clauses": [
+      "TWO GRADES WVNS"
+    ]
+  },
+  "expect_flagged": []
+}

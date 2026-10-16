@@ -1,0 +1,58 @@
+{
+  "recap_id": "cpp-10",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "MARLIN HORIZON",
+    "imo": "9054391",
+    "charterer": "PELICAN BAY REFINERY",
+    "owner": "CORVINA MARINE INC",
+    "cargo": {
+      "grade": "CPP (ULSD)",
+      "quantity_mt": 35000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC-MED"
+    ],
+    "laycan": {
+      "start": "2026-12-02",
+      "end": "2026-12-04"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 140,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 28500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 84.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-28",
+    "special_clauses": [
+      "TWO GRADES WVNS",
+      "ETS COSTS FOR CHRTS ACCT"
+    ]
+  },
+  "expect_flagged": []
+}

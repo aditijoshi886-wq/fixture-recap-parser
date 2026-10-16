@@ -1,0 +1,47 @@
+{
+  "recap_id": "gap-04",
+  "slice": "missing_or_conflicting",
+  "fields": {
+    "vessel_name": "SEA OF HEBRIDES",
+    "imo": "9575876",
+    "charterer": "HARBORLINE FUELS",
+    "owner": "AEGEAN CREST SHIPPING",
+    "cargo": {
+      "grade": "VGO",
+      "quantity_mt": 85000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "SANTOS"
+    ],
+    "discharge_ports": [
+      "CHIBA"
+    ],
+    "laycan": {
+      "start": "2026-11-22",
+      "end": "2026-11-25"
+    },
+    "freight": {
+      "basis": "LUMPSUM",
+      "value": 1875000.0,
+      "currency": "USD"
+    },
+    "demurrage": {
+      "rate_per_day": 35000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": null,
+    "cp_form": null,
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-11-05",
+    "special_clauses": []
+  },
+  "expect_flagged": [],
+  "note": "CP form and commissions missing; null, non-critical."
+}

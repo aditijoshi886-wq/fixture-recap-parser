@@ -1,0 +1,56 @@
+{
+  "recap_id": "gap-07",
+  "slice": "missing_or_conflicting",
+  "fields": {
+    "vessel_name": "DELTA KINGFISHER",
+    "imo": "9089889",
+    "charterer": "COASTLINE PETROLEUM",
+    "owner": "KESTREL MARITIME LTD",
+    "cargo": null,
+    "load_ports": [
+      "UKC"
+    ],
+    "discharge_ports": [
+      "USAC"
+    ],
+    "laycan": {
+      "start": "2026-11-06",
+      "end": "2026-11-08"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 115,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 22000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-13",
+    "special_clauses": [
+      "BIMCO SANCTIONS CLAUSE TO APPLY",
+      "ETS COSTS FOR CHRTS ACCT"
+    ]
+  },
+  "expect_flagged": [
+    "cargo"
+  ],
+  "note": "Two different cargo quantities; must be null and flagged."
+}

@@ -1,0 +1,57 @@
+{
+  "recap_id": "cpp-04",
+  "slice": "clean_cpp",
+  "fields": {
+    "vessel_name": "HALCYON DAWN",
+    "imo": "9795830",
+    "charterer": "SUNMERE ENERGY",
+    "owner": "BRAEMOOR CRUDE CARRIERS",
+    "cargo": {
+      "grade": "CPP (UNL GASOLINE)",
+      "quantity_mt": 38000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "USG"
+    ],
+    "discharge_ports": [
+      "UKC-MED"
+    ],
+    "laycan": {
+      "start": "2026-12-17",
+      "end": "2026-12-20"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 115,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 24500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "ON_SUBJECTS",
+    "fixture_date": "2026-12-09",
+    "special_clauses": [
+      "CHRTS TO PROVIDE LOI FOR DISCH WITHOUT BL"
+    ]
+  },
+  "expect_flagged": []
+}

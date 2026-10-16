@@ -1,0 +1,55 @@
+{
+  "recap_id": "dpp-06",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "PACIFIC WREN",
+    "imo": "9263095",
+    "charterer": "PELICAN BAY REFINERY",
+    "owner": "HALCYON NAVIGATION SA",
+    "cargo": {
+      "grade": "VGO",
+      "quantity_mt": 80000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "SANTOS"
+    ],
+    "discharge_ports": [
+      "CHIBA"
+    ],
+    "laycan": {
+      "start": "2026-10-30",
+      "end": "2026-11-01"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 120,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 35000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-03",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

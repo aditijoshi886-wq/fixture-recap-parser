@@ -1,0 +1,57 @@
+{
+  "recap_id": "dpp-07",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "AMBER FALCON",
+    "imo": "9133408",
+    "charterer": "ACME ENERGY TRADING SA",
+    "owner": "CORVINA MARINE INC",
+    "cargo": {
+      "grade": "CRUDE OIL",
+      "quantity_mt": 270000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "SIDI KERIR"
+    ],
+    "discharge_ports": [
+      "AUGUSTA"
+    ],
+    "laycan": {
+      "start": "2026-10-26",
+      "end": "2026-10-28"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 47.5,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 60000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-04",
+    "special_clauses": [
+      "BIMCO SANCTIONS CLAUSE TO APPLY"
+    ]
+  },
+  "expect_flagged": []
+}

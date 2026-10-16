@@ -1,0 +1,55 @@
+{
+  "recap_id": "short-01",
+  "slice": "shorthand",
+  "fields": {
+    "vessel_name": "BLUE HERON II",
+    "imo": null,
+    "charterer": "SUNMERE",
+    "owner": null,
+    "cargo": {
+      "grade": "CPP (JET A1)",
+      "quantity_mt": 55000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "ROTTERDAM"
+    ],
+    "discharge_ports": [
+      "NEW YORK"
+    ],
+    "laycan": {
+      "start": "2026-11-07",
+      "end": "2026-11-09"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 140,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 32500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "SHELLVOY 6",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-10-12",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}

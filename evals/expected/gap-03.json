@@ -1,0 +1,58 @@
+{
+  "recap_id": "gap-03",
+  "slice": "missing_or_conflicting",
+  "fields": {
+    "vessel_name": "KOTA LESTARI",
+    "imo": "9938341",
+    "charterer": "VERIDIAN REFINING",
+    "owner": "FJELLSTAD TANKERS AS",
+    "cargo": {
+      "grade": "CPP (ULSD)",
+      "quantity_mt": 90000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "AMSTERDAM",
+      "ANTWERP"
+    ],
+    "discharge_ports": [
+      "WAF"
+    ],
+    "laycan": null,
+    "freight": {
+      "basis": "WS",
+      "value": 187.5,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 40000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-12-04",
+    "special_clauses": [
+      "ETS COSTS FOR CHRTS ACCT"
+    ]
+  },
+  "expect_flagged": [
+    "laycan"
+  ],
+  "note": "No laycan stated; must be null and flagged."
+}

@@ -1,0 +1,56 @@
+{
+  "recap_id": "gap-01",
+  "slice": "missing_or_conflicting",
+  "fields": {
+    "vessel_name": "SIERRA ALBA",
+    "imo": null,
+    "charterer": "COASTLINE PETROLEUM",
+    "owner": null,
+    "cargo": {
+      "grade": "CPP (ULSD)",
+      "quantity_mt": 60000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "ROTTERDAM"
+    ],
+    "discharge_ports": [
+      "NEW YORK"
+    ],
+    "laycan": {
+      "start": "2026-11-28",
+      "end": "2026-11-30"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 187.5,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 30000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 96.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "ASBATANKVOY",
+    "subjects": "ON_SUBJECTS",
+    "fixture_date": "2026-11-20",
+    "special_clauses": []
+  },
+  "expect_flagged": [],
+  "note": "IMO and owner not stated; both null, nothing flagged as both are non-critical."
+}

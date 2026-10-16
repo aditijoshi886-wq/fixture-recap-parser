@@ -1,0 +1,57 @@
+{
+  "recap_id": "dpp-09",
+  "slice": "dirty_crude_dpp",
+  "fields": {
+    "vessel_name": "SILVER MAHSEER",
+    "imo": "9814806",
+    "charterer": "SUNMERE ENERGY",
+    "owner": "HALCYON NAVIGATION SA",
+    "cargo": {
+      "grade": "FUEL OIL 380 CST",
+      "quantity_mt": 80000,
+      "tolerance_pct": 10,
+      "tolerance_option": "MOLOO"
+    },
+    "load_ports": [
+      "PRIMORSK"
+    ],
+    "discharge_ports": [
+      "UKC"
+    ],
+    "laycan": {
+      "start": "2027-01-04",
+      "end": "2027-01-06"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 150,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 42000.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 72.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 2.5
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "ON_SUBJECTS",
+    "fixture_date": "2026-12-10",
+    "special_clauses": [
+      "BIMCO SANCTIONS CLAUSE TO APPLY"
+    ]
+  },
+  "expect_flagged": []
+}

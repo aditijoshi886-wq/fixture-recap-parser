@@ -1,0 +1,55 @@
+{
+  "recap_id": "short-03",
+  "slice": "shorthand",
+  "fields": {
+    "vessel_name": "SANTA ZOE",
+    "imo": null,
+    "charterer": "TERRANOVA CRUDE MARKETING",
+    "owner": null,
+    "cargo": {
+      "grade": "CPP (ULSD)",
+      "quantity_mt": 38000,
+      "tolerance_pct": 5,
+      "tolerance_option": "MOLCHOPT"
+    },
+    "load_ports": [
+      "AG"
+    ],
+    "discharge_ports": [
+      "FAR EAST"
+    ],
+    "laycan": {
+      "start": "2027-01-03",
+      "end": "2027-01-04"
+    },
+    "freight": {
+      "basis": "WS",
+      "value": 155,
+      "currency": null
+    },
+    "demurrage": {
+      "rate_per_day": 28500.0,
+      "currency": "USD",
+      "pro_rata": true
+    },
+    "laytime": {
+      "hours": 84.0,
+      "terms": "SHINC"
+    },
+    "commissions": [
+      {
+        "type": "ADDRESS",
+        "pct": 3.75
+      },
+      {
+        "type": "BROKERAGE",
+        "pct": 1.25
+      }
+    ],
+    "cp_form": "BPVOY4",
+    "subjects": "FIXED_CLEAN",
+    "fixture_date": "2026-12-18",
+    "special_clauses": []
+  },
+  "expect_flagged": []
+}
