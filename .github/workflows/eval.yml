@@ -1,0 +1,87 @@
+name: AI eval
+
+# Runs the AI parser over the 40-recap eval set and scores it.
+# Needs the repository secret ANTHROPIC_API_KEY (Settings > Secrets and variables > Actions).
+# Runs on demand, and whenever the parser or its prompt changes on main.
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Model to run"
+        default: "claude-sonnet-5-5"
+      prompt:
+        description: "Prompt version (file in parser/prompts)"
+        default: "v1"
+  push:
+    branches: [main]
+    paths: ["parser/**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-eval
+  cancel-in-progress: false
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MODEL: ${{ inputs.model || 'claude-sonnet-5-5' }}
+      PROMPT: ${{ inputs.prompt || 'v1' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Offline tests
+        run: python tests/test_eval.py && python tests/test_parser.py
+
+      - name: Check the API key is set
+        id: key
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then echo "present=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "present=false" >> "$GITHUB_OUTPUT"
+          msg="Repository secret ANTHROPIC_API_KEY is missing. Add it under Settings > Secrets and variables > Actions, then run this workflow."
+          echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo "::error::$msg"; exit 1; fi
+          echo "::warning::$msg"
+
+      - name: Run the AI parser on the eval set
+        if: steps.key.outputs.present == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python parser/run.py evals/recaps "out/ai-$PROMPT" --model "$MODEL" --prompt "$PROMPT"
+
+      - name: Score it
+        if: steps.key.outputs.present == 'true'
+        run: |
+          python evals/run_eval.py --predictions "out/ai-$PROMPT" --out "evals/results/ai-$PROMPT-$MODEL.md"
+          cat "evals/results/ai-$PROMPT-$MODEL.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep predictions as a download
+        if: steps.key.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: predictions-${{ env.PROMPT }}-${{ env.MODEL }}
+          path: out/
+
+      - name: Commit the report
+        if: steps.key.outputs.present == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add evals/results/
+          if git diff --cached --quiet; then echo "No change in report"; exit 0; fi
+          git commit -m "Eval report: prompt $PROMPT, model $MODEL"
+          git pull --rebase origin main
+          git push
