@@ -32,6 +32,7 @@ The model extracts; deterministic code validates. The model is never the only ch
 | [`evals/results/`](evals/results) | One report per parser or prompt version, kept for comparison |
 | [`baseline/rules_parser.py`](baseline/rules_parser.py) | Regex-only baseline the AI parser must beat |
 | [`parser/`](parser) | The AI parser: [versioned prompt](parser/prompts/v1.md), [extraction](parser/extract.py), [validation rules](parser/validate.py), [batch runner](parser/run.py) |
+| [`web/`](web) | The hosted review page: paste, review flagged fields, export JSON |
 | [`.github/workflows/eval.yml`](.github/workflows/eval.yml) | Runs the AI parser on the eval set and commits the report |
 | [`tools/generate_samples.py`](tools/generate_samples.py) | Builds the eval set from structured fixtures (reproducible, seeded) |
 | [`docs/`](docs) | [PRD](docs/PRD.md), [decision log](docs/decision-log.md), [port names](docs/ports.md) |
@@ -102,7 +103,7 @@ How the parser keeps errors visible:
 
 1. **Week 1 (done):** schema, 40-recap eval set, eval harness, rules baseline.
 2. **Week 2 (built, awaiting first run):** AI extraction with a forced tool call and source snippets, plus the validation rules. First AI eval run.
-3. **Week 3:** hosted review page: paste, review flagged fields, export JSON. Tune the prompt against the eval set.
+3. **Week 3 (first version live):** hosted review page: paste, review flagged fields, export JSON. Tune the prompt against the eval set.
 4. **Week 4:** demo video, write-up, and real-world format samples.
 
 ## How this was built

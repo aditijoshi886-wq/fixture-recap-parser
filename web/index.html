@@ -1,0 +1,856 @@
+<title>Fixture Recap Parser</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: an ops desk. Header strip with export state; left = the recap as telex text with source highlights; right = review queue, flagged fields first. Stacks to one column on phones. */
+:root {
+  --bg: #eef1f3;
+  --panel: #ffffff;
+  --ink: #142231;
+  --muted: #566577;
+  --line: #d3dae1;
+  --tint: #f5f7f9;
+  --accent: #1d5c8a;
+  --accent-ink: #ffffff;
+  --mark: #ffe08a;
+  --mark-ink: #142231;
+  --ok: #1e7a4c;      --ok-bg: #e2f3ea;
+  --check: #8a5a00;   --check-bg: #fff1d1;
+  --fix: #b42318;     --fix-bg: #fde4e1;
+  --display: "Barlow Semi Condensed", "Arial Narrow", Arial, sans-serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e151c; --panel: #151f29; --ink: #e3e9ef; --muted: #93a3b4; --line: #2a3846; --tint: #1a2632;
+    --accent: #6fb0e0; --accent-ink: #08121b; --mark: #6b5310; --mark-ink: #fff4d6;
+    --ok: #6fd3a0; --ok-bg: #12301f; --check: #f2c063; --check-bg: #3a2c0c; --fix: #ff8a80; --fix-bg: #3d1614;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e151c; --panel: #151f29; --ink: #e3e9ef; --muted: #93a3b4; --line: #2a3846; --tint: #1a2632;
+  --accent: #6fb0e0; --accent-ink: #08121b; --mark: #6b5310; --mark-ink: #fff4d6;
+  --ok: #6fd3a0; --ok-bg: #12301f; --check: #f2c063; --check-bg: #3a2c0c; --fix: #ff8a80; --fix-bg: #3d1614;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.5;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 16px; }
+h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .01em; margin: 0; text-wrap: balance; }
+h1 { font-size: 28px; line-height: 1.1; }
+h2 { font-size: 18px; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+a { color: var(--accent); }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); padding: 6px 12px; font-weight: 500; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.link { border: 0; background: none; padding: 0; color: var(--accent); text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* header */
+.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
+.top .lede { max-width: 62ch; color: var(--muted); margin-top: 6px; }
+.status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { font-family: var(--mono); font-size: 12px; padding: 3px 8px; border-radius: 999px; background: var(--tint); border: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chip.fix { background: var(--fix-bg); color: var(--fix); border-color: transparent; }
+.chip.check { background: var(--check-bg); color: var(--check); border-color: transparent; }
+.chip.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+
+/* columns */
+.cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.recap-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+@media (max-width: 900px) { .recap-col { position: static; } }
+
+.examples { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.examples button { font-size: 12px; padding: 3px 9px; }
+.examples button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+textarea#recap {
+  width: 100%; min-height: 340px; resize: vertical; font-family: var(--mono); font-size: 12.5px; line-height: 1.55;
+  background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+}
+.telex {
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
+  background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 12px; max-height: 62vh; overflow: auto; margin: 0;
+}
+.telex mark { background: var(--mark); color: var(--mark-ink); border-radius: 2px; padding: 0 1px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.count { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+.count.over { color: var(--fix); }
+.note { font-size: 12.5px; color: var(--muted); }
+.note.warn { color: var(--check); }
+.note.err { color: var(--fix); }
+.banner { font-size: 12.5px; padding: 8px 10px; border-radius: 8px; background: var(--tint); border: 1px dashed var(--line); color: var(--muted); }
+.thinking { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+
+/* review list */
+.queue { display: grid; gap: 8px; }
+.group-label { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.field { border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; background: var(--panel); min-width: 0; }
+.field.s-fix { border-left-color: var(--fix); }
+.field.s-check { border-left-color: var(--check); }
+.field.s-ok, .field.s-confirmed { border-left-color: var(--line); }
+.field.selected { box-shadow: 0 0 0 2px var(--accent) inset; }
+.field.compact { grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 2px 12px; padding: 8px 12px; }
+.field.compact .fhead { grid-column: 1 / -1; }
+.field.compact .src { justify-self: end; }
+.fhead { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.fname { font-weight: 600; }
+.crit { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+.pill { margin-left: auto; font-family: var(--mono); font-size: 11.5px; padding: 1px 8px; border-radius: 999px; }
+.pill.fix { background: var(--fix-bg); color: var(--fix); }
+.pill.check { background: var(--check-bg); color: var(--check); }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.confirmed { background: var(--tint); color: var(--muted); border: 1px solid var(--line); }
+.fval { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+.fval.empty { color: var(--muted); font-style: italic; font-family: var(--sans); }
+.msgs { margin: 0; padding-left: 18px; font-size: 12.5px; }
+.msgs li.fix { color: var(--fix); }
+.msgs li.check { color: var(--check); }
+.src { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; text-align: left; }
+.src q { font-family: var(--mono); color: var(--ink); }
+.factions { display: flex; gap: 6px; flex-wrap: wrap; }
+.factions button { font-size: 12.5px; padding: 3px 10px; }
+.editor { display: grid; gap: 8px; padding: 10px; border-radius: 8px; background: var(--tint); border: 1px solid var(--line); }
+.editor .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+.editor label { display: grid; gap: 2px; font-size: 11.5px; color: var(--muted); }
+.editor input, .editor select, .editor textarea { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font-family: var(--mono); font-size: 12.5px; min-width: 0; width: 100%; }
+.editor .check-label { display: flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--ink); }
+.editor .check-label input { width: auto; }
+
+.empty-state { padding: 24px 8px; text-align: center; color: var(--muted); display: grid; gap: 6px; }
+
+/* export */
+.export { display: grid; gap: 10px; }
+pre.json { font-family: var(--mono); font-size: 12px; background: var(--tint); border: 1px solid var(--line); border-radius: 8px; padding: 12px; max-height: 320px; overflow: auto; margin: 0; }
+details summary { cursor: pointer; font-weight: 500; }
+.log { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 4px; font-size: 12.5px; }
+.log li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; }
+.log time { font-family: var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+footer { font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Tanker fixtures · AI extraction with human review</p>
+      <h1>Fixture Recap Parser</h1>
+      <p class="lede">Paste a broker's recap. Claude extracts the 16 fixture terms and quotes where each came from. Code checks the dates, IMO and rates. You confirm anything flagged, then export JSON for the voyage system.</p>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </header>
+
+  <div class="cols">
+    <section class="panel recap-col" aria-labelledby="recap-h">
+      <div class="panel-head">
+        <h2 id="recap-h">Recap</h2>
+        <span class="note" id="recap-mode-note"></span>
+      </div>
+      <div class="examples" role="group" aria-label="Example recaps">
+        <span class="note">Examples (invented):</span>
+        <button type="button" data-ex="conflict">Conflicting terms</button>
+        <button type="button" data-ex="email">Email thread</button>
+        <button type="button" data-ex="shorthand">Shorthand, year-end</button>
+      </div>
+      <textarea id="recap" spellcheck="false" aria-label="Recap text"></textarea>
+      <pre class="telex" id="telex" hidden></pre>
+      <div class="row">
+        <button type="button" class="primary" id="parse">Parse with Claude</button>
+        <button type="button" id="stop" hidden>Stop</button>
+        <button type="button" id="edit-text" hidden>Edit text</button>
+        <span class="count" id="count"></span>
+      </div>
+      <div id="parse-state"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="review-h">
+      <div class="panel-head">
+        <h2 id="review-h">Review</h2>
+        <span class="note" id="review-note"></span>
+      </div>
+      <div id="queue" class="queue"></div>
+      <div class="export" id="export-box" hidden>
+        <div class="row">
+          <button type="button" class="primary" id="export">Export JSON</button>
+          <button type="button" id="copy">Copy JSON</button>
+          <span class="note" id="export-note"></span>
+        </div>
+        <details>
+          <summary>JSON preview</summary>
+          <pre class="json" id="json"></pre>
+        </details>
+        <details id="log-box">
+          <summary>Change log (<span id="log-count">0</span>)</summary>
+          <ul class="log" id="log"></ul>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>All examples are synthetic: vessels, companies, IMO numbers and figures are invented. Parsing uses your own Claude usage and asks your permission the first time.</p>
+    <p>Spec, eval set and code: <a href="https://github.com/aditijoshi886-wq/fixture-recap-parser" target="_blank" rel="noopener">github.com/aditijoshi886-wq/fixture-recap-parser</a></p>
+  </footer>
+</div>
+
+<script>
+(() => {
+const MAX_CHARS = 10000;
+
+const EXAMPLES = {
+  conflict: `CLEAN RECAP - MT MORAY FIRTH / COASTLINE - CP DD 21 November 2026
+
+HEREWITH RECAP OF THE FIXTURE CONCLUDED TODAY:
+
+1. VSL: MT MORAY FIRTH (IMO 9925942)
+2. OWNERS: AEGEAN CREST SHIPPING
+3. CHRTS: COASTLINE PETROLEUM
+4. CARGO: 65,000 MT CPP (ULSD) 10% MOLOO
+5. LOAD: 1 SP US GULF
+6. DISCH: CARIBS
+7. LAYCAN: 21-22 DEC
+8. FRT: WORLDSCALE 210
+9. DEM: USD 32,500 PDPR
+10. LAYTIME: 72 HRS SHINC
+11. COMMS: ADDRESS 3.75 PCT, BROKERAGE 1.25 PCT
+12. CP: ASBATANKVOY
+13. SUBJECTS: CLEAN FIXED
+NB DEMURRAGE USD 35,000 PDPR AS PER OWNERS LAST
+
+OTHER TERMS:
+- BIMCO SANCTIONS CLAUSE TO APPLY
+
+OTHERWISE AS PER OWNERS LAST CP WITH ACME, LOGICALLY AMENDED.
+
+THANKS FOR THE SUPPORT
+`,
+  email: `From: Fairlead Brokers <recaps@fairlead.example>
+Sent: 7 November 2026 17:42
+To: Ops Desk <ops@oriel.example>
+Subject: RE: MT CAPE COLVILLE - RECAP
+
+RECAP - MT CAPE COLVILLE / ORIEL - CP DD 07 NOV 2026
+
+PLEASED TO CONFIRM THE FOLLOWING FIXTURE:
+
+1. VSL: MT CAPE COLVILLE (IMO 9104639)
+2. OWNERS: HALCYON NAVIGATION SA
+3. CHRTS: ORIEL OIL TRADING
+4. CARGO: 37,000 MT CPP (GASOIL 10PPM) 10% MOLCHOPT
+5. LOAD: 1/2 SP PG
+6. DISCH: 1 SP WEST AFRICA
+7. LAYCAN: 06-08 DECEMBER 2026
+8. FRT: USD 1,400,000 LUMPSUM
+9. DEM: USD 24,500 PDPR
+10. LAYTIME: 96 HRS SHINC
+11. COMMS: 3.75% ADDCOMM + 1.25% BROKERAGE
+12. CP: SHELLVOY 6
+13. SUBJECTS: FIXED CLEAN
+
+ALL ELSE AS PER CP FORM, LOGICALLY AMENDED.
+
+THANK YOU BOTH FOR A SMOOTH FIXTURE
+Rgds
+Tom
+Sent from my iPhone
+
+
+> -----Original Message-----
+> OWNERS OFFER: USD 1,470,000 LUMPSUM / DEM USD 99,000 PDPR / OTHERWISE AS LAST
+> PLS REVERT
+`,
+  shorthand: `FIXED 21-DEC-26: LADY KORRIGAN 260 CONDENSATE 10% MOLOO SANTOS / 1 SP CHIBA 03 - 05 JAN W52 DEM USD 68K PDPR SUNMERE ASBATANKVOY 84HRS SHINC 1.25ADC+1.25BRK FXD
+`,
+};
+
+// A worked example so the page opens in a working state. It is labelled as an example, not a live parse.
+const EXAMPLE_RESULT = {
+  vessel_name: { value: "MORAY FIRTH", confidence: "high", source: "MT MORAY FIRTH" },
+  imo: { value: "9925942", confidence: "high", source: "IMO 9925942" },
+  charterer: { value: "COASTLINE PETROLEUM", confidence: "high", source: "CHRTS: COASTLINE PETROLEUM" },
+  owner: { value: "AEGEAN CREST SHIPPING", confidence: "high", source: "OWNERS: AEGEAN CREST SHIPPING" },
+  cargo: { value: { grade: "CPP (ULSD)", quantity_mt: 65000, tolerance_pct: 10, tolerance_option: "MOLOO" }, confidence: "high", source: "65,000 MT CPP (ULSD) 10% MOLOO" },
+  load_ports: { value: ["USG"], confidence: "high", source: "1 SP US GULF" },
+  discharge_ports: { value: ["CARIBS"], confidence: "high", source: "DISCH: CARIBS" },
+  laycan: { value: { start: "2026-12-21", end: "2026-12-22" }, confidence: "medium", source: "LAYCAN: 21-22 DEC" },
+  freight: { value: { basis: "WS", value: 210, currency: null }, confidence: "high", source: "WORLDSCALE 210" },
+  demurrage: { value: null, confidence: "low", source: "DEM: USD 32,500 PDPR | NB DEMURRAGE USD 35,000 PDPR" },
+  laytime: { value: { hours: 72, terms: "SHINC" }, confidence: "high", source: "72 HRS SHINC" },
+  commissions: { value: [{ type: "ADDRESS", pct: 3.75 }, { type: "BROKERAGE", pct: 1.25 }], confidence: "high", source: "ADDRESS 3.75 PCT, BROKERAGE 1.25 PCT" },
+  cp_form: { value: "ASBATANKVOY", confidence: "high", source: "CP: ASBATANKVOY" },
+  subjects: { value: "FIXED_CLEAN", confidence: "high", source: "CLEAN FIXED" },
+  fixture_date: { value: "2026-11-21", confidence: "high", source: "CP DD 21 November 2026" },
+  special_clauses: { value: ["BIMCO SANCTIONS CLAUSE TO APPLY"], confidence: "high", source: "BIMCO SANCTIONS CLAUSE TO APPLY" },
+};
+
+const PORTS = ["USG","USAC","UKC","MED","UKC-MED","AG","WAF","WCI","FAR EAST","ECSA","CARIBS","BALTIC","HOUSTON","CORPUS CHRISTI","NEW YORK","ROTTERDAM","ANTWERP","AMSTERDAM","LE HAVRE","AUGUSTA","SIDI KERIR","CEYHAN","PRIMORSK","BONNY","RAS TANURA","JUBAIL","FUJAIRAH","SINGAPORE","ULSAN","CHIBA","SANTOS","LAGOS"];
+
+const FIELDS = [
+  { key: "vessel_name", label: "Vessel", kind: "text", critical: true },
+  { key: "imo", label: "IMO number", kind: "imo" },
+  { key: "charterer", label: "Charterer", kind: "text", critical: true },
+  { key: "owner", label: "Owner / disponent owner", kind: "text" },
+  { key: "cargo", label: "Cargo", kind: "cargo", critical: true },
+  { key: "load_ports", label: "Load port(s)", kind: "ports", critical: true },
+  { key: "discharge_ports", label: "Discharge port(s)", kind: "ports", critical: true },
+  { key: "laycan", label: "Laycan", kind: "laycan", critical: true },
+  { key: "freight", label: "Freight", kind: "freight", critical: true },
+  { key: "demurrage", label: "Demurrage", kind: "dem", critical: true },
+  { key: "laytime", label: "Laytime", kind: "laytime" },
+  { key: "commissions", label: "Commissions", kind: "comms" },
+  { key: "cp_form", label: "Charter party form", kind: "text" },
+  { key: "subjects", label: "Subjects", kind: "subjects", critical: true },
+  { key: "fixture_date", label: "Fixture date", kind: "date" },
+  { key: "special_clauses", label: "Special clauses", kind: "clauses" },
+];
+const BY_KEY = Object.fromEntries(FIELDS.map(f => [f.key, f]));
+
+const PROMPT = `You extract the agreed terms of one tanker fixture from a broker's recap.
+
+The text may be a clean recap, a one-line shorthand fixture, an email thread, or a chat log. Read all of it, but extract only the fixture being recapped.
+
+GROUND RULES
+1. Extract only what the text states. If a term is not stated, its value is null. Never fill a gap with a typical or likely value.
+2. For every non-null value, "source" is the exact words in the text it came from, copied character for character (a short span). If you cannot point to such words, the value must be null.
+3. If the same term is stated twice with different values (two demurrage rates, two quantities, a laycan "amended ??"), value is null, confidence "low", and source holds both snippets separated by " | ". Do not pick one.
+4. Confidence: "high" when stated plainly; "medium" when you interpreted shorthand or inferred a year; "low" when unclear or contradictory.
+5. Ignore quoted earlier offers ("> OWNERS OFFER ..."), signatures, disclaimers, chat timestamps, HTML tags, and position lists or news about other vessels.
+
+FIELD CONVENTIONS
+- vessel_name: string without "MT"/"MV".
+- imo: seven-digit string, only if stated.
+- charterer, owner: strings as written; do not expand short names. Disponent owners go in owner.
+- cargo: {"grade": string as written, "quantity_mt": number, "tolerance_pct": number|null, "tolerance_option": "MOLOO"|"MOLCHOPT"|null}. In shorthand one-liners a bare number before the grade is thousands of tonnes ("37 ULSD" = 37000).
+- load_ports, discharge_ports: arrays of strings, one per port or range, recap order, without qualifiers like "1/2 SP", "1-2 SB", "1 SP". Use these canonical names when they apply: ${PORTS.join(", ")} (US GULF = USG, UK CONT = UKC, PG/ARABIAN GULF = AG, WEST AFRICA = WAF, SPORE = SINGAPORE, FEAST = FAR EAST, ROTT = ROTTERDAM).
+- laycan: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}. If no year is given take it from the fixture date; if the laycan month is earlier than the fixture month it falls in the next year.
+- freight: {"basis": "WS"|"LUMPSUM"|"PER_MT", "value": number, "currency": string|null}. WS = Worldscale (WS 125, W125, WORLDSCALE 125; currency null). LUMPSUM: "USD 1.2M LS" = 1200000, currency "USD". PER_MT: PMT, /MT, PER MT.
+- demurrage: {"rate_per_day": number, "currency": "USD", "pro_rata": boolean}. "28.5K" = 28500. pro_rata true when PDPR or "pro rata".
+- laytime: {"hours": number, "terms": string|null}, e.g. "72 HRS SHINC".
+- commissions: array of {"type": "ADDRESS"|"BROKERAGE", "pct": number}. "3.75PCT TTL INCL 1.25 BRKG" = address 2.5, brokerage 1.25.
+- cp_form: string, e.g. ASBATANKVOY, BPVOY4, SHELLVOY 6.
+- subjects: "FIXED_CLEAN" (CLEAN FIXED, SUBS LIFTED, FXD) or "ON_SUBJECTS" (ON SUBS, SUBJECT ..., SUBS).
+- fixture_date: "YYYY-MM-DD" from "CP DD ..." or "FIXED ..."; the recap's CP date beats an email's sent date.
+- special_clauses: array of strings, only terms listed explicitly as other/additional agreed terms, verbatim; [] when none.
+
+OUTPUT
+Reply with only one JSON object with exactly these 16 keys: ${FIELDS.map(f => f.key).join(", ")}.
+Each key maps to {"value": <as above or null>, "confidence": "high"|"medium"|"low", "source": string|null}.
+Example entry: "freight": {"value": {"basis": "WS", "value": 125, "currency": null}, "confidence": "high", "source": "WS 125"}
+
+RECAP
+<recap>
+`;
+
+// ------------------------------------------------------------------ state
+const state = {
+  recapText: EXAMPLES.conflict,
+  analysedText: EXAMPLES.conflict,
+  fields: clone(EXAMPLE_RESULT),
+  review: {},            // key -> "confirmed" | "edited"
+  log: [],
+  selected: null,
+  editing: null,
+  example: "conflict",
+  isExample: true,
+  busy: false,
+  sampleReady: undefined, // undefined = not known yet, null = unavailable
+};
+let sample = undefined, downloads = undefined, ctl = null;
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+const $ = id => document.getElementById(id);
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) n.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) n.append(c.nodeType ? c : String(c));
+  return n;
+}
+
+// ------------------------------------------------------------------ formatting
+const nf = (n, d = 0) => Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: 2 });
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fdate(s) { if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return String(s ?? ""); return `${+s.slice(8)} ${MON[+s.slice(5,7)-1]} ${s.slice(0,4)}`; }
+function isEmpty(v) { return v == null || v === "" || (Array.isArray(v) && v.length === 0); }
+
+function show(kind, v) {
+  if (isEmpty(v)) return null;
+  try {
+    switch (kind) {
+      case "cargo": return `${nf(v.quantity_mt)} MT ${v.grade}${v.tolerance_pct != null ? ` · ${nf(v.tolerance_pct)}% ${v.tolerance_option ?? ""}` : ""}`.trim();
+      case "ports": return v.join(" + ");
+      case "laycan": return `${fdate(v.start)} – ${fdate(v.end)}`;
+      case "freight": return v.basis === "WS" ? `WS ${nf(v.value)}` : v.basis === "LUMPSUM" ? `${v.currency ?? "?"} ${nf(v.value)} lump sum` : `${v.currency ?? "?"} ${nf(v.value, 2)} per MT`;
+      case "dem": return `${v.currency ?? "?"} ${nf(v.rate_per_day)} per day${v.pro_rata ? " pro rata" : ""}`;
+      case "laytime": return `${nf(v.hours)} hours${v.terms ? " " + v.terms : ""}`;
+      case "comms": return v.map(c => `${c.type === "ADDRESS" ? "Address" : "Brokerage"} ${nf(c.pct)}%`).join(" · ");
+      case "subjects": return v === "FIXED_CLEAN" ? "Fixed clean" : v === "ON_SUBJECTS" ? "On subjects" : String(v);
+      case "date": return fdate(v);
+      case "clauses": return v.join(" · ");
+      default: return String(v);
+    }
+  } catch { return JSON.stringify(v); }
+}
+
+// ------------------------------------------------------------------ validation (mirrors parser/validate.py)
+const squash = s => String(s).toUpperCase().split(/\s+/).filter(Boolean).join(" ");
+function imoValid(s) {
+  if (!/^\d{7}$/.test(String(s))) return false;
+  const d = String(s).split("").map(Number);
+  return d.slice(0, 6).reduce((a, x, i) => a + x * (7 - i), 0) % 10 === d[6];
+}
+const pdate = s => (typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s))) ? new Date(s + "T00:00:00Z") : null;
+const isNum = x => typeof x === "number" && isFinite(x);
+
+function validate(fields, recap) {
+  const out = {};
+  const text = squash(recap);
+  const add = (k, sev, msg) => (out[k] ||= []).push({ sev, msg });
+  for (const f of FIELDS) {
+    const r = fields[f.key] || {};
+    const v = r.value;
+    if (isEmpty(v)) {
+      if (r.source && String(r.source).includes(" | ")) add(f.key, "check", "The recap states this term more than once with different values. Enter the agreed one.");
+      else if (f.critical) add(f.key, "check", "Not found in the recap. Enter it, or confirm it is not agreed.");
+      continue;
+    }
+    if (!r.source) add(f.key, "check", "No source words given for this value.");
+    else {
+      const parts = String(r.source).split(" | ").filter(p => p.trim());
+      if (!parts.every(p => text.includes(squash(p)))) add(f.key, "check", "The quoted source words are not in the recap. Check this value.");
+    }
+    if (r.confidence && r.confidence !== "high" && !r.source?.includes?.(" | ")) {
+      add(f.key, "check", r.confidence === "medium" ? "Claude interpreted shorthand or inferred part of this. Confirm." : "Claude is unsure about this value. Confirm.");
+    }
+  }
+  const fx = pdate(fields.fixture_date?.value);
+  const lc = fields.laycan?.value;
+  if (lc && !isEmpty(lc)) {
+    const s = pdate(lc.start), e = pdate(lc.end);
+    if (!s || !e) add("laycan", "fix", "Laycan dates must be valid dates.");
+    else {
+      if (s > e) add("laycan", "fix", "Laycan end is before laycan start.");
+      if (fx) {
+        const days = (s - fx) / 864e5;
+        if (days < -7 || days > 120) add("laycan", "check", "Laycan is not within 120 days after the fixture date.");
+        if (s.getUTCFullYear() > fx.getUTCFullYear()) add("laycan", "check", `Laycan rolls into ${s.getUTCFullYear()}. Confirm the year.`);
+      }
+    }
+  }
+  const imo = fields.imo?.value;
+  if (!isEmpty(imo) && !imoValid(imo)) add("imo", "fix", "IMO number fails the check-digit rule.");
+  const fr = fields.freight?.value;
+  if (fr && !isEmpty(fr)) {
+    if (fr.basis === "WS") { if (!isNum(fr.value) || fr.value < 1 || fr.value > 500) add("freight", "fix", "A Worldscale rate should be between 1 and 500."); }
+    else if (fr.basis === "LUMPSUM" || fr.basis === "PER_MT") {
+      if (!fr.currency) add("freight", "fix", "Lump sum or per-tonne freight needs a currency.");
+      if (!isNum(fr.value) || fr.value <= 0) add("freight", "fix", "Freight must be a positive amount.");
+    } else add("freight", "fix", "Choose a freight basis.");
+  }
+  const dem = fields.demurrage?.value;
+  if (dem && !isEmpty(dem)) {
+    if (!isNum(dem.rate_per_day) || dem.rate_per_day <= 0 || !dem.currency) add("demurrage", "fix", "Demurrage needs a positive daily rate and a currency.");
+    else if (dem.rate_per_day > 250000) add("demurrage", "check", "Demurrage above USD 250,000 per day is unusual for a tanker. Check.");
+  }
+  const cg = fields.cargo?.value;
+  if (cg && !isEmpty(cg)) {
+    if (!isNum(cg.quantity_mt) || cg.quantity_mt < 1000 || cg.quantity_mt > 350000) add("cargo", "fix", "Cargo quantity should be 1,000 to 350,000 MT. Check the units.");
+    if (!cg.grade) add("cargo", "fix", "Cargo grade is missing.");
+  }
+  return out;
+}
+
+function statusOf(key, issues) {
+  const list = issues[key] || [];
+  if (list.some(i => i.sev === "fix")) return "fix";
+  if (state.review[key]) return "confirmed";
+  if (list.length) return "check";
+  return "ok";
+}
+
+// ------------------------------------------------------------------ highlight
+function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function renderTelex() {
+  const t = $("telex");
+  t.textContent = "";
+  const text = state.analysedText;
+  const src = state.selected ? state.fields[state.selected]?.source : null;
+  const ranges = [];
+  if (src) {
+    for (const part of String(src).split(" | ")) {
+      const words = part.trim().split(/\s+/).filter(Boolean).map(escapeRe);
+      if (!words.length) continue;
+      const re = new RegExp(words.join("\\s+"), "gi");
+      let m;
+      while ((m = re.exec(text))) { ranges.push([m.index, m.index + m[0].length]); if (!m[0].length) break; }
+    }
+  }
+  ranges.sort((a, b) => a[0] - b[0]);
+  let pos = 0, first = null;
+  for (const [a, b] of ranges) {
+    if (a < pos) continue;
+    t.append(text.slice(pos, a));
+    const mk = el("mark", { text: text.slice(a, b) });
+    first ||= mk;
+    t.append(mk);
+    pos = b;
+  }
+  t.append(text.slice(pos));
+  if (first) first.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+
+// ------------------------------------------------------------------ editors
+function editorFor(f, v) {
+  const box = el("div", { class: "editor" });
+  const grid = el("div", { class: "grid" });
+  const inp = (label, attrs) => { const i = el("input", attrs); grid.append(el("label", {}, label, i)); return i; };
+  const sel = (label, opts, cur) => { const s = el("select", {}, opts.map(([val, txt]) => el("option", { value: val, selected: val === (cur ?? "") }, txt))); grid.append(el("label", {}, label, s)); return s; };
+  let read;
+  const id = p => `ed-${f.key}-${p}`;
+  switch (f.kind) {
+    case "text": case "imo": {
+      const i = inp(f.label, { id: id("v"), value: v ?? "" });
+      read = () => i.value.trim() || null; break;
+    }
+    case "date": {
+      const i = inp(f.label, { id: id("v"), type: "date", value: v ?? "" });
+      read = () => i.value || null; break;
+    }
+    case "cargo": {
+      const g = inp("Grade", { id: id("g"), value: v?.grade ?? "" });
+      const q = inp("Quantity (MT)", { id: id("q"), type: "number", min: 0, step: 500, value: v?.quantity_mt ?? "" });
+      const t = inp("Tolerance (%)", { id: id("t"), type: "number", min: 0, step: 0.5, value: v?.tolerance_pct ?? "" });
+      const o = sel("Option", [["", "None"], ["MOLOO", "MOLOO (owners)"], ["MOLCHOPT", "MOLCHOPT (charterers)"]], v?.tolerance_option);
+      read = () => (!g.value.trim() && !q.value) ? null : { grade: g.value.trim(), quantity_mt: q.value === "" ? null : +q.value, tolerance_pct: t.value === "" ? null : +t.value, tolerance_option: o.value || null };
+      break;
+    }
+    case "ports": {
+      const i = inp("Ports or ranges, separated by +", { id: id("v"), value: (v || []).join(" + "), list: "port-list" });
+      read = () => { const a = i.value.split("+").map(s => s.trim().toUpperCase()).filter(Boolean); return a.length ? a : null; };
+      break;
+    }
+    case "laycan": {
+      const s = inp("Laydays (start)", { id: id("s"), type: "date", value: v?.start ?? "" });
+      const e = inp("Cancelling (end)", { id: id("e"), type: "date", value: v?.end ?? "" });
+      read = () => (!s.value && !e.value) ? null : { start: s.value, end: e.value };
+      break;
+    }
+    case "freight": {
+      const b = sel("Basis", [["WS", "Worldscale (WS)"], ["LUMPSUM", "Lump sum"], ["PER_MT", "Per MT"]], v?.basis ?? "WS");
+      const x = inp("Rate / amount", { id: id("x"), type: "number", min: 0, step: "any", value: v?.value ?? "" });
+      const c = inp("Currency", { id: id("c"), value: v?.currency ?? "", placeholder: "USD", maxlength: 3 });
+      read = () => x.value === "" ? null : { basis: b.value, value: +x.value, currency: b.value === "WS" ? null : (c.value.trim().toUpperCase() || null) };
+      break;
+    }
+    case "dem": {
+      const r = inp("Rate per day", { id: id("r"), type: "number", min: 0, step: 500, value: v?.rate_per_day ?? "" });
+      const c = inp("Currency", { id: id("c"), value: v?.currency ?? "USD", maxlength: 3 });
+      const p = el("input", { type: "checkbox", id: id("p"), checked: v ? !!v.pro_rata : true });
+      grid.append(el("label", { class: "check-label" }, p, "Pro rata (PDPR)"));
+      read = () => r.value === "" ? null : { rate_per_day: +r.value, currency: c.value.trim().toUpperCase() || "USD", pro_rata: p.checked };
+      break;
+    }
+    case "laytime": {
+      const h = inp("Hours", { id: id("h"), type: "number", min: 0, value: v?.hours ?? "" });
+      const t = inp("Terms", { id: id("t"), value: v?.terms ?? "", placeholder: "SHINC" });
+      read = () => h.value === "" ? null : { hours: +h.value, terms: t.value.trim().toUpperCase() || null };
+      break;
+    }
+    case "comms": {
+      const a = inp("Address commission (%)", { id: id("a"), type: "number", min: 0, step: 0.25, value: v?.find?.(c => c.type === "ADDRESS")?.pct ?? "" });
+      const b = inp("Brokerage (%)", { id: id("b"), type: "number", min: 0, step: 0.25, value: v?.find?.(c => c.type === "BROKERAGE")?.pct ?? "" });
+      read = () => { const out = []; if (a.value !== "") out.push({ type: "ADDRESS", pct: +a.value }); if (b.value !== "") out.push({ type: "BROKERAGE", pct: +b.value }); return out.length ? out : null; };
+      break;
+    }
+    case "subjects": {
+      const s = sel(f.label, [["", "Not stated"], ["FIXED_CLEAN", "Fixed clean"], ["ON_SUBJECTS", "On subjects"]], v);
+      read = () => s.value || null; break;
+    }
+    case "clauses": {
+      const t = el("textarea", { id: id("v"), rows: 3 }); t.value = (v || []).join("\n");
+      box.append(el("label", {}, "One clause per line", t));
+      read = () => { const a = t.value.split("\n").map(s => s.trim()).filter(Boolean); return a.length ? a : []; };
+      break;
+    }
+  }
+  if (grid.childNodes.length) box.prepend(grid);
+  const save = el("button", { type: "button", class: "primary", text: "Save", onclick: () => commitEdit(f.key, read()) });
+  const cancel = el("button", { type: "button", text: "Cancel", onclick: () => { state.editing = null; render(); } });
+  box.append(el("div", { class: "factions" }, save, cancel));
+  setTimeout(() => box.querySelector("input,select,textarea")?.focus(), 0);
+  return box;
+}
+
+function logChange(key, before, after, how) {
+  const f = BY_KEY[key];
+  const now = new Date();
+  state.log.unshift({ t: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
+    what: `${f.label}: ${show(f.kind, before) ?? "empty"} → ${show(f.kind, after) ?? "empty"}${how ? ` (${how})` : ""}` });
+}
+function commitEdit(key, value) {
+  const f = BY_KEY[key];
+  const before = state.fields[key].value;
+  state.fields[key] = { value, confidence: "high", source: state.fields[key].source, edited: true };
+  state.review[key] = "edited";
+  logChange(key, before, value, "edited");
+  state.editing = null;
+  render();
+}
+function confirmField(key) {
+  const f = BY_KEY[key];
+  state.review[key] = "confirmed";
+  const v = state.fields[key].value;
+  state.log.unshift({ t: new Date().toTimeString().slice(0, 5), what: `${f.label}: confirmed ${show(f.kind, v) ?? "as not agreed"}` });
+  render();
+}
+function clearField(key) {
+  const before = state.fields[key].value;
+  state.fields[key] = { value: BY_KEY[key].kind === "clauses" ? [] : null, confidence: "high", source: null, edited: true };
+  state.review[key] = "edited";
+  logChange(key, before, state.fields[key].value, "cleared");
+  render();
+}
+
+// ------------------------------------------------------------------ export
+function exportObject() {
+  const o = {};
+  for (const f of FIELDS) {
+    let v = state.fields[f.key]?.value;
+    if (f.kind === "clauses") v = isEmpty(v) ? [] : v;
+    else if (isEmpty(v)) v = null;
+    o[f.key] = v;
+  }
+  return o;
+}
+function exportBlockers(issues) {
+  const b = [];
+  for (const f of FIELDS) {
+    const s = statusOf(f.key, issues);
+    if (s === "fix") b.push(`${f.label} has an error`);
+    else if (f.critical && s === "check") b.push(`${f.label} needs a check`);
+  }
+  return b;
+}
+
+// ------------------------------------------------------------------ render
+function render() {
+  const issues = validate(state.fields, state.analysedText);
+  const hasResult = !!state.fields;
+  // recap side
+  const showTelex = hasResult && !state.busy && state.recapText === state.analysedText && !state.editingText;
+  $("recap").hidden = showTelex;
+  $("telex").hidden = !showTelex;
+  $("edit-text").hidden = !showTelex;
+  if (showTelex) renderTelex();
+  $("recap-mode-note").textContent = showTelex ? "Select a field to see where it came from" : "";
+  const n = state.recapText.length;
+  $("count").textContent = `${n.toLocaleString("en-US")} / ${MAX_CHARS.toLocaleString("en-US")} characters`;
+  $("count").classList.toggle("over", n > MAX_CHARS);
+  for (const b of document.querySelectorAll("[data-ex]")) b.setAttribute("aria-pressed", String(state.example === b.dataset.ex));
+  $("parse").disabled = state.busy || !state.recapText.trim() || n > MAX_CHARS || state.sampleReady === null;
+  $("stop").hidden = !state.busy;
+
+  // parse state line
+  const ps = $("parse-state"); ps.textContent = "";
+  if (n > MAX_CHARS) ps.append(el("p", { class: "note err", text: `This recap is ${n.toLocaleString("en-US")} characters. The limit is 10,000; paste only the recap itself.` }));
+  if (state.busy) ps.append(el("div", { class: "thinking" }, el("span", { class: "dot", "aria-hidden": "true" }), el("span", { text: state.busyText || "Claude is reading the recap. This usually takes 10 to 60 seconds." })));
+  if (state.error) ps.append(el("p", { class: "note err", text: state.error }));
+  if (state.sampleReady === null) ps.append(el("p", { class: "note warn", text: "Parsing needs Claude, which isn't available in this view. Open the page in Claude to run it. The example review below still works." }));
+
+  // review side
+  const q = $("queue"); q.textContent = "";
+  if (!hasResult) {
+    q.append(el("div", { class: "empty-state" }, el("strong", { text: "Nothing to review yet" }), el("span", { text: "Paste a recap or pick an example, then choose Parse with Claude. The 16 fixture terms appear here, flagged ones first." })));
+    $("export-box").hidden = true;
+    $("status").textContent = "";
+    $("review-note").textContent = "";
+    return;
+  }
+  if (state.isExample) q.append(el("p", { class: "banner", text: "Example review, filled in ahead of time for the conflicting-terms recap. Choose Parse with Claude to run it live." }));
+
+  const sorted = FIELDS.map((f, i) => ({ f, i, s: statusOf(f.key, issues) }));
+  const rank = x => (x.s === "fix" ? 0 : 1) * 2 + (x.f.critical ? 0 : 1);
+  const needs = sorted.filter(x => x.s === "fix" || x.s === "check").sort((a, b) => rank(a) - rank(b) || a.i - b.i);
+  const rest = sorted.filter(x => !(x.s === "fix" || x.s === "check"));
+  if (needs.length) q.append(el("p", { class: "group-label", text: `Needs you · ${needs.length}` }));
+  needs.forEach(x => q.append(fieldCard(x.f, x.s, issues[x.f.key] || [])));
+  if (rest.length) q.append(el("p", { class: "group-label", text: `Ready · ${rest.length}` }));
+  rest.forEach(x => q.append(fieldCard(x.f, x.s, issues[x.f.key] || [])));
+
+  // status chips
+  const counts = { fix: 0, check: 0, ok: 0 };
+  sorted.forEach(x => { counts[x.s === "confirmed" ? "ok" : x.s]++; });
+  const st = $("status"); st.textContent = "";
+  if (counts.fix) st.append(el("span", { class: "chip fix", text: `${counts.fix} to fix` }));
+  if (counts.check) st.append(el("span", { class: "chip check", text: `${counts.check} to check` }));
+  st.append(el("span", { class: "chip ok", text: `${counts.ok} of 16 ready` }));
+  const blockers = exportBlockers(issues);
+  st.append(el("span", { class: "chip", text: blockers.length ? "Export locked" : "Ready to export" }));
+  $("review-note").textContent = state.recapText !== state.analysedText
+    ? "Showing the last parsed recap. Parse to review the new text."
+    : `${FIELDS.filter(f => f.critical).length} critical fields drive money and dates`;
+
+  // export
+  $("export-box").hidden = false;
+  const json = JSON.stringify(exportObject(), null, 2);
+  $("json").textContent = json;
+  $("export").disabled = !!blockers.length;
+  $("export").hidden = downloads === null;
+  $("export-note").textContent = blockers.length ? `Export unlocks when every critical field is ready: ${blockers.join("; ")}.` : "All critical fields are confirmed or check out.";
+  $("export-note").className = "note" + (blockers.length ? " warn" : "");
+  const log = $("log"); log.textContent = "";
+  state.log.forEach(e => log.append(el("li", {}, el("time", { text: e.t }), el("span", { text: e.what }))));
+  if (!state.log.length) log.append(el("li", {}, el("time", { text: "" }), el("span", { class: "note", text: "No changes yet. Edits and confirmations are listed here." })));
+  $("log-count").textContent = state.log.length;
+}
+
+function fieldCard(f, s, list) {
+  const r = state.fields[f.key] || {};
+  const valueText = show(f.kind, r.value);
+  const card = el("article", { class: `field s-${s}${state.selected === f.key ? " selected" : ""}`, "data-field": f.key });
+  const pillText = { fix: "Fix", check: "Check", ok: "OK", confirmed: state.review[f.key] === "edited" ? "Edited" : "Confirmed" }[s];
+  card.append(el("div", { class: "fhead" },
+    el("span", { class: "fname", text: f.label }),
+    f.critical ? el("span", { class: "crit", text: "Critical" }) : null,
+    el("span", { class: `pill ${s}`, text: pillText })));
+  card.append(el("div", { class: "fval" + (valueText ? "" : " empty"), text: valueText ?? (r.source?.includes?.(" | ") ? "Left empty: conflicting values" : "Not stated") }));
+  const compact = (s === "ok" || s === "confirmed") && state.selected !== f.key && state.editing !== f.key;
+  if (compact) {
+    card.classList.add("compact");
+    card.append(el("button", { type: "button", class: "link src", text: "Show source and edit", onclick: () => { state.selected = f.key; render(); } }));
+    return card;
+  }
+  const shown = s === "confirmed" ? list.filter(i => i.sev === "fix") : list;
+  if (shown.length) card.append(el("ul", { class: "msgs" }, shown.map(i => el("li", { class: i.sev, text: i.msg }))));
+  if (r.source) {
+    const srcBtn = el("button", { type: "button", class: "link src", onclick: () => { state.selected = state.selected === f.key ? null : f.key; render(); } },
+      "From the recap: ", el("q", { text: r.source }));
+    card.append(srcBtn);
+  }
+  if (state.editing === f.key) card.append(editorFor(f, r.value));
+  else {
+    const acts = el("div", { class: "factions" });
+    if (s === "check") acts.append(el("button", { type: "button", text: isEmpty(r.value) ? "Confirm not agreed" : "Confirm", onclick: () => confirmField(f.key) }));
+    acts.append(el("button", { type: "button", text: isEmpty(r.value) ? "Enter value" : "Edit", onclick: () => { state.editing = f.key; state.selected = f.key; render(); } }));
+    if (!isEmpty(r.value)) acts.append(el("button", { type: "button", text: "Clear", onclick: () => clearField(f.key) }));
+    card.append(acts);
+  }
+  return card;
+}
+
+// ------------------------------------------------------------------ parse
+function normalise(raw) {
+  const out = {};
+  for (const f of FIELDS) {
+    const r = raw && typeof raw === "object" ? raw[f.key] : null;
+    const ok = r && typeof r === "object" && "value" in r;
+    out[f.key] = {
+      value: ok ? r.value : null,
+      confidence: ok && ["high", "medium", "low"].includes(r.confidence) ? r.confidence : "low",
+      source: ok && typeof r.source === "string" && r.source.trim() ? r.source : null,
+    };
+  }
+  return out;
+}
+const ERR_COPY = {
+  not_granted: "Claude wasn't allowed for this page, so it can't parse. You can still review the example.",
+  sampling_disabled: "Claude isn't available for this account.",
+  rate_limited: "Too many requests right now. Wait a minute, then choose Parse again.",
+  session_expired: "Your Claude session expired. Sign in again, then retry.",
+  refused: "Claude declined to process this text. Check it is a fixture recap.",
+  invalid_json: "Claude's answer couldn't be read as fixture data. Choose Parse to try again.",
+  prompt_too_large: "This text is too long to send. Paste only the recap.",
+  empty_completion: "Claude returned nothing. Choose Parse to try again.",
+};
+async function parse() {
+  if (!sample || state.busy) return;
+  const text = state.recapText;
+  state.busy = true; state.error = null; state.editingText = false;
+  state.busyText = "Waiting for Claude. The first time, you'll be asked to allow this page to use Claude.";
+  render();
+  ctl = new AbortController();
+  const started = performance.now();
+  const tick = setInterval(() => { const s = Math.round((performance.now() - started) / 1000); state.busyText = `Claude is reading the recap · ${s}s. This usually takes 10 to 60 seconds.`; render(); }, 1000);
+  try {
+    const raw = await sample.json(PROMPT + text + "\n</recap>", { signal: ctl.signal, modelTier: "default" });
+    state.fields = normalise(raw);
+    state.analysedText = text;
+    state.review = {}; state.log = []; state.selected = null; state.editing = null; state.isExample = false;
+  } catch (e) {
+    if (e?.code !== "cancelled") state.error = ERR_COPY[e?.code] || "Something went wrong reaching Claude. Choose Parse to try again.";
+    if (e?.code === "not_granted" || e?.code === "sampling_disabled") state.sampleReady = null;
+  } finally {
+    clearInterval(tick);
+    state.busy = false; ctl = null;
+    render();
+  }
+}
+
+// ------------------------------------------------------------------ events
+$("recap").value = state.recapText;
+$("recap").addEventListener("input", e => { state.recapText = e.target.value; state.example = null; state.error = null; render(); });
+$("parse").addEventListener("click", parse);
+$("stop").addEventListener("click", () => ctl?.abort());
+$("edit-text").addEventListener("click", () => { state.editingText = true; render(); $("recap").focus(); });
+for (const b of document.querySelectorAll("[data-ex]")) b.addEventListener("click", () => {
+  const k = b.dataset.ex;
+  state.example = k; state.recapText = EXAMPLES[k]; $("recap").value = EXAMPLES[k]; state.error = null;
+  if (k === "conflict") {
+    Object.assign(state, { analysedText: EXAMPLES.conflict, fields: clone(EXAMPLE_RESULT), review: {}, log: [], selected: null, editing: null, isExample: true, editingText: false });
+  } else {
+    state.editingText = true; // new text: show it as editable until parsed
+  }
+  render();
+});
+$("copy").addEventListener("click", async () => {
+  const txt = $("json").textContent;
+  try { await navigator.clipboard.writeText(txt); $("export-note").textContent = "JSON copied."; }
+  catch {
+    $("json").closest("details").open = true;
+    const r = document.createRange(); r.selectNodeContents($("json"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    $("export-note").textContent = "Copy didn't work here. The JSON is selected; press Ctrl+C or Cmd+C.";
+  }
+});
+$("export").addEventListener("click", async () => {
+  if (!downloads) return;
+  const o = exportObject();
+  const name = `fixture-${(o.vessel_name || "vessel").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${o.fixture_date || "undated"}.json`;
+  try { await downloads.save({ filename: name, data: JSON.stringify(o, null, 2) + "\n" }); $("export-note").textContent = `Saved ${name}.`; }
+  catch (e) { if (e?.code !== "declined") $("export-note").textContent = "Saving isn't available here. Use Copy JSON instead."; }
+});
+
+// datalist of canonical ports for the port editor
+document.body.append(el("datalist", { id: "port-list" }, PORTS.map(p => el("option", { value: p }))));
+
+render();
+
+// capabilities light up when ready
+(async () => {
+  try { sample = window.claude ? await window.claude.use("sample") : null; } catch { sample = null; }
+  state.sampleReady = sample ? true : null;
+  try { downloads = window.claude ? await window.claude.use("downloads") : null; } catch { downloads = null; }
+  render();
+})();
+})();
+</script>
